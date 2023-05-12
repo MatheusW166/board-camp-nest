@@ -7,7 +7,6 @@ import { Repository } from "typeorm";
 import { CustomerEntity, isCustomerColumn } from "./customer.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateCustomerDto } from "./dto/createCustomer.dto";
-import { UpdateCustomerDto } from "./dto/updateCustomer.dto";
 import { FindAllCustomerDto } from "./dto/findAllCustomer.dto";
 
 @Injectable()
@@ -18,7 +17,7 @@ export class CustomerService {
   ) {}
 
   async create(data: CreateCustomerDto): Promise<CustomerEntity> {
-    const customer = await this.customerRepository.find({
+    const customer = await this.customerRepository.findOne({
       where: { cpf: data.cpf },
     });
     if (customer) {
@@ -51,7 +50,7 @@ export class CustomerService {
     return customer;
   }
 
-  async update(id: number, data: UpdateCustomerDto) {
+  async update(id: number, data: Partial<CreateCustomerDto>) {
     const { cpf } = data;
     let customerFound: CustomerEntity;
 
@@ -76,6 +75,6 @@ export class CustomerService {
       throw new NotFoundException();
     }
 
-    return true;
+    return "OK";
   }
 }

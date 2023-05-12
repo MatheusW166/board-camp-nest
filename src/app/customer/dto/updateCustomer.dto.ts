@@ -6,10 +6,3 @@ export const updateCustomerSchema = Joi.object({
   cpf: Joi.string().trim().replace(/\D/, "").length(11).optional(),
   birthday: Joi.string().trim().isoDate().optional(),
 }).min(1);
-
-export interface UpdateCustomerDto {
-  name?: string;
-  phone?: string;
-  cpf?: string;
-  birthday?: string;
-}
