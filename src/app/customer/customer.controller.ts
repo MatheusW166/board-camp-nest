@@ -5,7 +5,7 @@ import {
   Param,
   Patch,
   Post,
-  Req,
+  Query,
   UsePipes,
 } from "@nestjs/common";
 import { CustomerService } from "./customer.service";
@@ -13,20 +13,17 @@ import {
   CreateCustomerDto,
   createCustomerSchema,
 } from "./dto/createCustomer.dto";
-import { ValidationPipe } from "../pipes/validation.pipe";
-import {
-  UpdateCustomerDto,
-  updateCustomerSchema,
-} from "./dto/updateCustomer.dto";
-import { Request } from "express";
+import { ValidationPipe } from "../../pipes/validation.pipe";
+import { updateCustomerSchema } from "./dto/updateCustomer.dto";
+import { FindAllCustomerDto } from "./dto/findAllCustomer.dto";
 
 @Controller("customers")
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Get()
-  async findAll(@Req() req: Request) {
-    return this.customerService.findAll(req.query);
+  async findAll(@Query() query: FindAllCustomerDto) {
+    return this.customerService.findAll(query);
   }
 
   @Get(":id")
@@ -36,7 +33,10 @@ export class CustomerController {
 
   @UsePipes(new ValidationPipe(updateCustomerSchema))
   @Patch(":id")
-  async update(@Param("id") id: number, @Body() body: UpdateCustomerDto) {
+  async update(
+    @Param("id") id: number,
+    @Body() body: Partial<CreateCustomerDto>,
+  ) {
     return this.customerService.update(id, body);
   }
 
