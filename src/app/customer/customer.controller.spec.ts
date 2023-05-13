@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CustomerController } from "../customer.controller";
-import { CustomerService } from "../customer.service";
-import { CustomerEntity } from "../customer.entity";
-import { CreateCustomerDto } from "../dto/createCustomer.dto";
+import { CustomerController } from "./customer.controller";
+import { CustomerService } from "./customer.service";
+import { CustomerEntity } from "./customer.entity";
+import { CreateCustomerDto } from "./dto/createCustomer.dto";
 
 const customerEntityList: CustomerEntity[] = [
   {

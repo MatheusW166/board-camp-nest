@@ -13,7 +13,7 @@ import {
   CreateCustomerDto,
   createCustomerSchema,
 } from "./dto/createCustomer.dto";
-import { ValidationPipe } from "../../pipes/validation.pipe";
+import { ValidationPipe } from "../../pipes/validation/validation.pipe";
 import { updateCustomerSchema } from "./dto/updateCustomer.dto";
 import { FindAllCustomerDto } from "./dto/findAllCustomer.dto";
 
@@ -31,8 +31,8 @@ export class CustomerController {
     return this.customerService.findById(id);
   }
 
-  @UsePipes(new ValidationPipe(updateCustomerSchema))
   @Patch(":id")
+  @UsePipes(new ValidationPipe(updateCustomerSchema))
   async update(
     @Param("id") id: number,
     @Body() body: Partial<CreateCustomerDto>,
@@ -40,8 +40,8 @@ export class CustomerController {
     return this.customerService.update(id, body);
   }
 
-  @UsePipes(new ValidationPipe(createCustomerSchema))
   @Post()
+  @UsePipes(new ValidationPipe(createCustomerSchema))
   async create(@Body() body: CreateCustomerDto) {
     return this.customerService.create(body);
   }
