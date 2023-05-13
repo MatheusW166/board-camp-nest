@@ -19,7 +19,7 @@ function isErrorRelevant(error: ValidationError) {
 
 @Injectable()
 export class ValidationPipe implements PipeTransform {
-  constructor(private schema: ObjectSchema) {}
+  constructor(private readonly schema: ObjectSchema) {}
   transform(input: any) {
     const { error, value } = this.schema.validate(input, { abortEarly: false });
     if (error && isErrorRelevant(error)) {
