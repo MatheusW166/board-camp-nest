@@ -1,16 +1,18 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { CustomerEntity } from "../customer/customer.entity";
+import { GameEntity } from "../game/game.entity";
 
-@Index("rentals_pkey", ["id"], { unique: true })
-@Entity("rentals", { schema: "public" })
+@Index("rentals_primary_key", ["id"], { unique: true })
+@Entity({ name: "rentals", schema: "public" })
 export class RentalEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })
   id: number;
-
-  @Column("integer", { name: "customerId" })
-  customerId: number;
-
-  @Column("integer", { name: "gameId" })
-  gameId: number;
 
   @Column("date", { name: "rentDate" })
   rentDate: string;
@@ -26,4 +28,12 @@ export class RentalEntity {
 
   @Column("integer", { name: "delayFee", nullable: true })
   delayFee: number | null;
+
+  @ManyToOne(() => GameEntity, (game) => game.rentals, { onDelete: "CASCADE" })
+  game: GameEntity;
+
+  @ManyToOne(() => CustomerEntity, (customer) => customer.rentals, {
+    onDelete: "CASCADE",
+  })
+  customer: CustomerEntity;
 }

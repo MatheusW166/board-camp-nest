@@ -13,7 +13,7 @@ import {
   CreateCustomerDto,
   createCustomerSchema,
 } from "./dto/createCustomer.dto";
-import { ValidationPipe } from "../../pipes/validation/validation.pipe";
+import { ValidationPipe } from "../../pipes/validation.pipe";
 import { updateCustomerSchema } from "./dto/updateCustomer.dto";
 import { FindAllCustomerDto } from "./dto/findAllCustomer.dto";
 

@@ -3,10 +3,12 @@ import {
   CreateCustomerDto,
   createCustomerSchema,
 } from "../app/customer/dto/createCustomer.dto";
+import { updateCustomerSchema } from "../app/customer/dto/updateCustomer.dto";
 import { ValidationPipe } from "./validation.pipe";
 
 describe("ValidationPipe", () => {
   const createCustomerValidation = new ValidationPipe(createCustomerSchema);
+  const updateCustomerValidation = new ValidationPipe(updateCustomerSchema);
 
   describe("createCustomerSchema", () => {
     it("should accept a valid customer", () => {
@@ -101,5 +103,9 @@ describe("ValidationPipe", () => {
         createCustomerValidation.transform(invalidCustomer),
       ).toThrowError(BadRequestException);
     });
+  });
+
+  describe("updateCustomerSchema", () => {
+    console.log(updateCustomerValidation);
   });
 });

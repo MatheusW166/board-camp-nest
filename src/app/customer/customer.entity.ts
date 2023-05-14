@@ -1,7 +1,14 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { RentalEntity } from "../rental/rental.entity";
 
-@Index("customers_pkey", ["id"], { unique: true })
-@Entity("customers", { schema: "public" })
+@Index("customers_primary_key", ["id"], { unique: true })
+@Entity({ name: "customers", schema: "public" })
 export class CustomerEntity {
   @PrimaryGeneratedColumn("increment")
   id: number;
@@ -12,11 +19,19 @@ export class CustomerEntity {
   @Column("text", { name: "phone", nullable: false })
   phone: string;
 
-  @Column("character varying", { name: "cpf", length: 11, nullable: false })
+  @Column("character varying", {
+    name: "cpf",
+    unique: true,
+    length: 11,
+    nullable: false,
+  })
   cpf: string;
 
   @Column("date", { name: "birthday", nullable: false })
   birthday: string;
+
+  @OneToMany(() => RentalEntity, (rental) => rental.customer)
+  rentals: RentalEntity[];
 }
 
 export function isCustomerColumn(columnName: string): boolean {

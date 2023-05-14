@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,6 +9,7 @@ import { CustomerEntity, isCustomerColumn } from "./customer.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { CreateCustomerDto } from "./dto/createCustomer.dto";
 import { FindAllCustomerDto } from "./dto/findAllCustomer.dto";
+import { DbErrors, DbErrorsExplain } from "../../constants/db.constants";
 
 @Injectable()
 export class CustomerService {
@@ -17,13 +19,16 @@ export class CustomerService {
   ) {}
 
   async create(data: CreateCustomerDto): Promise<CustomerEntity> {
-    const customer = await this.customerRepository.findOne({
-      where: { cpf: data.cpf },
-    });
-    if (customer) {
-      throw new ConflictException("This user already exists");
+    try {
+      return await this.customerRepository.save(
+        this.customerRepository.create(data),
+      );
+    } catch (err) {
+      if (err.message?.includes(DbErrors.duplicatedKey)) {
+        throw new ConflictException(DbErrorsExplain.customerInsertionConflict);
+      }
+      throw new BadRequestException();
     }
-    return this.customerRepository.save(this.customerRepository.create(data));
   }
 
   async findAll({
@@ -51,30 +56,18 @@ export class CustomerService {
   }
 
   async update(id: number, data: Partial<CreateCustomerDto>) {
-    const { cpf } = data;
-    let customerFound: CustomerEntity;
-
-    if (cpf) {
-      customerFound = await this.customerRepository.findOneBy({
-        cpf,
-      });
+    try {
+      await this.customerRepository.update(
+        {
+          id,
+        },
+        this.customerRepository.create(data),
+      );
+    } catch (err) {
+      if (err.message?.includes(DbErrors.duplicatedKey)) {
+        throw new ConflictException(DbErrorsExplain.customerInsertionConflict);
+      }
+      throw new BadRequestException();
     }
-
-    if (customerFound && customerFound.id !== Number(id)) {
-      throw new ConflictException("There is another customer with this cpf");
-    }
-
-    const { affected } = await this.customerRepository.update(
-      {
-        id,
-      },
-      this.customerRepository.create(data),
-    );
-
-    if (affected === 0) {
-      throw new NotFoundException();
-    }
-
-    return "OK";
   }
 }

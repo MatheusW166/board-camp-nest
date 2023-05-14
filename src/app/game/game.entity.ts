@@ -1,12 +1,19 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { RentalEntity } from "../rental/rental.entity";
 
-@Index("games_pkey", ["id"], { unique: true })
-@Entity("games", { schema: "public" })
+@Index("games_primary_key", ["id"], { unique: true })
+@Entity({ name: "games", schema: "public" })
 export class GameEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })
   id: number;
 
-  @Column("text", { name: "name" })
+  @Column("text", { name: "name", unique: true })
   name: string;
 
   @Column("text", { name: "image" })
@@ -17,4 +24,11 @@ export class GameEntity {
 
   @Column("integer", { name: "pricePerDay" })
   pricePerDay: number;
+
+  @OneToMany(() => RentalEntity, (rental) => rental.game)
+  rentals: RentalEntity[];
+}
+
+export function isGameColumn(columnName: string): boolean {
+  return ["name", "stockTotal", "pricePerDay"].includes(columnName);
 }
