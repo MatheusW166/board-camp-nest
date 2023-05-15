@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   ManyToOne,
@@ -14,19 +15,19 @@ export class RentalEntity {
   @PrimaryGeneratedColumn({ type: "integer", name: "id" })
   id: number;
 
-  @Column("date", { name: "rentDate" })
+  @CreateDateColumn({ type: "date", name: "rentDate" })
   rentDate: string;
 
   @Column("integer", { name: "daysRented" })
   daysRented: number;
 
-  @Column("date", { name: "returnDate", nullable: true })
+  @Column("date", { name: "returnDate", nullable: true, default: null })
   returnDate: string | null;
 
   @Column("integer", { name: "originalPrice" })
   originalPrice: number;
 
-  @Column("integer", { name: "delayFee", nullable: true })
+  @Column("integer", { name: "delayFee", nullable: true, default: null })
   delayFee: number | null;
 
   @ManyToOne(() => GameEntity, (game) => game.rentals, { onDelete: "CASCADE" })
@@ -36,4 +37,25 @@ export class RentalEntity {
     onDelete: "CASCADE",
   })
   customer: CustomerEntity;
+}
+
+export function isRentalColumn(columnName: string): boolean {
+  return [
+    "rentDate",
+    "daysRented",
+    "returnDate",
+    "originalPrice",
+    "delayFee",
+    "customerId",
+    "gameId",
+  ].includes(columnName);
+}
+
+export function mapRentalColumn(columnName: string): string | null {
+  if (!isRentalColumn(columnName)) return null;
+  const columnMap = {
+    gameId: "game.id",
+    customerId: "customer.id",
+  };
+  return columnMap[columnName] ?? columnName;
 }

@@ -50,7 +50,7 @@ export class CustomerService {
   async findById(id: number): Promise<CustomerEntity> {
     const customer = await this.customerRepository.findOneBy({ id });
     if (!customer) {
-      throw new NotFoundException();
+      throw new NotFoundException(DbErrorsExplain.customerNotFound);
     }
     return customer;
   }

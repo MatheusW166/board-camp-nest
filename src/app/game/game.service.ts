@@ -48,7 +48,7 @@ export class GameService {
   async findById(id: number): Promise<GameEntity> {
     const game = await this.gameRepository.findOneBy({ id });
     if (!game) {
-      throw new NotFoundException();
+      throw new NotFoundException(DbErrorsExplain.gameNotFound);
     }
     return game;
   }

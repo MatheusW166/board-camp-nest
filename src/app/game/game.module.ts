@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { GameEntity } from "./game.entity";
 
 @Module({
+  exports: [GameService],
   imports: [TypeOrmModule.forFeature([GameEntity])],
   controllers: [GameController],
   providers: [GameService],
