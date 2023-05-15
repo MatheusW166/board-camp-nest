@@ -27,7 +27,7 @@ export class RentalService {
     order,
     startDate,
     status,
-  }: FindAllRentalDto) {
+  }: FindAllRentalDto): Promise<RentalEntity[]> {
     const orderBy = mapRentalColumn(order) ?? "id";
     return this.rentalRepository.find({
       order: { [orderBy]: desc ? "DESC" : "ASC" },
@@ -50,7 +50,7 @@ export class RentalService {
     });
   }
 
-  async create(data: CreateRentalDto) {
+  async create(data: CreateRentalDto): Promise<RentalEntity> {
     const { gameId, customerId } = data;
     const rentalsCount = await this.countGamesRented(gameId);
     const gameInStock = await this.gameService.findById(gameId);
@@ -71,7 +71,7 @@ export class RentalService {
     return this.rentalRepository.save(newRentalEntity);
   }
 
-  private async countGamesRented(gameId: number) {
+  private async countGamesRented(gameId: number): Promise<number> {
     return this.rentalRepository.count({
       where: { returnDate: IsNull(), game: { id: gameId } },
     });

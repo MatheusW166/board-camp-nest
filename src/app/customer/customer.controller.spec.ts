@@ -11,6 +11,7 @@ const customerEntityList: CustomerEntity[] = [
     birthday: "1999-07-08",
     name: "John Doe",
     phone: "+13156661234",
+    rentals: null,
   },
   {
     id: 2,
@@ -18,6 +19,7 @@ const customerEntityList: CustomerEntity[] = [
     birthday: "2000-04-02",
     name: "Double John",
     phone: "+15851664321",
+    rentals: null,
   },
 ];
 
