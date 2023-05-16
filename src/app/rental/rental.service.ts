@@ -1,9 +1,15 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { IsNull, MoreThanOrEqual, Not, Repository } from "typeorm";
+import {
+  DeleteResult,
+  IsNull,
+  MoreThanOrEqual,
+  Not,
+  Repository,
+} from "typeorm";
 import { RentalEntity, mapRentalColumn } from "./rental.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindAllRentalDto } from "./dto/findAllRental.dto";
-import { isIsoDate } from "../../helpers/date.helpers";
+import { diffInDays, isIsoDate } from "../../helpers/date.helpers";
 import { CreateRentalDto } from "./dto/createRental.dto";
 import { GameService } from "../game/game.service";
 import { CustomerService } from "../customer/customer.service";
@@ -48,6 +54,45 @@ export class RentalService {
       skip: offset,
       take: limit,
     });
+  }
+
+  async findById(id: number): Promise<RentalEntity> {
+    return this.rentalRepository.findOne({
+      where: { id },
+      relations: { customer: true, game: true },
+    });
+  }
+
+  async returnRental(id: number): Promise<RentalEntity> {
+    const rental = await this.findById(id);
+    if (!rental) {
+      throw new BadRequestException(DbErrorsExplain.rentalNotFound);
+    }
+    if (rental.returnDate) {
+      throw new BadRequestException(DbErrorsExplain.rentalFinished);
+    }
+
+    const rentDate = new Date(rental.rentDate).getTime();
+    const delayInDays = diffInDays(rentDate, Date.now()) - rental.daysRented;
+
+    const delayFee =
+      (delayInDays < 0 ? 0 : delayInDays) * rental.game.pricePerDay;
+
+    rental.returnDate = new Date().toISOString();
+    rental.delayFee = delayFee;
+
+    return this.rentalRepository.save(rental);
+  }
+
+  async deleteRental(id: number): Promise<DeleteResult> {
+    const rental = await this.findById(id);
+    if (!rental) {
+      throw new BadRequestException(DbErrorsExplain.rentalNotFound);
+    }
+    if (!rental.returnDate) {
+      throw new BadRequestException(DbErrorsExplain.rentalNotFinished);
+    }
+    return this.rentalRepository.delete(rental);
   }
 
   async create(data: CreateRentalDto): Promise<RentalEntity> {
